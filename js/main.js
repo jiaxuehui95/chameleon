@@ -1,9 +1,21 @@
+var role
+var mic
+
 function setup() {
-    createCanvas(500,500);
-    document.getElementById('defaultCanvas0')
-    $('defaultCanvas0').addClass()
+    createCanvas(windowWidth, windowHeight);
+    $('#defaultCanvas0').addClass('myCanvas');
+    mic = new p5.AudioIn()
+    mic.start();
+    role = loadGif("lapin.gif")
+
+}
+
+function windowResized() {
+    resizeCanvas(windowWidth, windowHeight);
 }
 
 function draw() {
-    background(255,0,255);
+    background('#fff3f3');
+    micLevel = mic.getLevel();
+    image(role,windowHeight/4,windowWidth/4,role.width/3,role.height/3)
 }
