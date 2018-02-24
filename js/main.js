@@ -1,10 +1,23 @@
 var role;
 var mic;
 var height;
-var diff;
-var isUp;
-var isDown;
-var isLock;
+var diff=0;
+var isUp=false;
+var isDown=false;
+var isLock=false;
+
+var Min = 400;
+var Max = 600;
+var num_l = 5;
+var wide = 100;
+var speed = 20;
+var max_interspace = 200;
+var centerX = 50;
+var frameCount = 0;
+
+var recHeight;
+
+var r = new Array(num_l);
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
@@ -18,10 +31,22 @@ function setup() {
     isLock=false;
     role = loadGif("lapin.gif")
 
+    frameRate(20);
+    var start = 0;
+    var i;
+    for( i = 0; i < num_l; i++){
+        var tmp = Math.random() * (Max - Min) + Min;
+        var interspace =Math.random() * (max_interspace - 20) + 20;
+        r[i] =new Rectangle(start, tmp);
+        start += (tmp + interspace);
+    }
 }
 
 function windowResized() {
     resizeCanvas(windowWidth, windowHeight);
+    height =windowHeight/2
+    recHeight=height-wide-role.height/3+10
+
 }
 
 function draw() {
@@ -30,7 +55,7 @@ function draw() {
 
     image(role,windowWidth/4,height-diff,role.width/3,role.height/3)
     if(micLevel>0.01) {
-        console.log(micLevel)
+
         if(!isLock) {
             isUp = true;
             isLock=true;
@@ -52,5 +77,50 @@ function draw() {
         isLock=false
     }
 
+    frameCount++;
+   // background(0);
+
+   var i,e;
+    for(i = 0; i < num_l; i++){
+        r[i].draw_rect();
+    }
+
+    for( e in  r){
+
+        r[e].beginX -= speed;
+    }
+
+    //si le premier rectangle est disparu d'écran, on ajoute un nouveau(il y a toujours num_l rectangles dans r)
+    if(r[0].beginX + r[0].len < 0 ){
+        for(i = 1; i < num_l; i++){
+            r[i - 1] = r[i];
+        }
+
+        r[num_l - 1] = new Rectangle(random(r[num_l - 2].beginX + r[num_l - 2].len, r[num_l - 2].beginX + r[num_l - 2].len + max_interspace), random(Min, Max));
+    }
+
 }
+
+function Rectangle (beginX,len){
+    this.beginX=beginX;
+    this.len=len
+
+
+    var c=255;
+    this.draw_rect =function(){
+        noStroke();
+        fill("#eab4d4");
+        push();
+        translate(this.beginX, 700);
+       
+        rect(0, -recHeight, this.len, wide);
+
+        pop();
+    }
+
+}
+
+
+
+
 
