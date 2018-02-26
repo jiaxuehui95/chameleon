@@ -21,7 +21,7 @@ var r = new Array(num_l);
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
-    $('#defaultCanvas0').addClass('myCanvas');
+
     mic = new p5.AudioIn()
     mic.start();
     height =windowHeight/2
