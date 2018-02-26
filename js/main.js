@@ -10,9 +10,8 @@ var Min = 400;
 var Max = 600;
 var num_l = 5;
 var wide = 100;
-var speed = 20;
+var speed = 30;
 var max_interspace = 200;
-var centerX = 50;
 var frameCount = 0;
 
 var recHeight;
@@ -30,6 +29,7 @@ function setup() {
     isDown=false;
     isLock=false;
     role = loadGif("lapin.gif")
+    recHeight=height+wide-10
 
     frameRate(20);
     var start = 0;
@@ -45,7 +45,7 @@ function setup() {
 function windowResized() {
     resizeCanvas(windowWidth, windowHeight);
     height =windowHeight/2
-    recHeight=height-wide-role.height/3+10
+    recHeight=height+wide-10
 
 }
 
@@ -54,7 +54,7 @@ function draw() {
     micLevel = mic.getLevel();
 
     image(role,windowWidth/4,height-diff,role.width/3,role.height/3)
-    if(micLevel>0.01) {
+    if(micLevel>0.05) {
 
         if(!isLock) {
             isUp = true;
@@ -78,24 +78,20 @@ function draw() {
     }
 
     frameCount++;
-   // background(0);
-
+   
    var i,e;
     for(i = 0; i < num_l; i++){
         r[i].draw_rect();
     }
-
     for( e in  r){
 
         r[e].beginX -= speed;
     }
-
     //si le premier rectangle est disparu d'écran, on ajoute un nouveau(il y a toujours num_l rectangles dans r)
     if(r[0].beginX + r[0].len < 0 ){
         for(i = 1; i < num_l; i++){
             r[i - 1] = r[i];
         }
-
         r[num_l - 1] = new Rectangle(random(r[num_l - 2].beginX + r[num_l - 2].len, r[num_l - 2].beginX + r[num_l - 2].len + max_interspace), random(Min, Max));
     }
 
@@ -111,9 +107,9 @@ function Rectangle (beginX,len){
         noStroke();
         fill("#eab4d4");
         push();
-        translate(this.beginX, 700);
-       
-        rect(0, -recHeight, this.len, wide);
+        translate(this.beginX, recHeight);
+
+        rect(0, 0, this.len, wide);
 
         pop();
     }
