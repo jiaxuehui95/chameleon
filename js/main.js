@@ -11,6 +11,7 @@ var Max = 600;
 var num_l = 5;
 var wide = 100;
 var speed = 30;
+var min_interspace = 20;
 var max_interspace = 200;
 var frameCount = 0;
 
@@ -34,7 +35,9 @@ function setup() {
     frameRate(20);
     var start = 0;
     var i;
-    for( i = 0; i < num_l; i++){
+    r[0] = new Rectangle(start, windowWidth/4);
+    start += windowWidth/4;
+    for( i = 1; i < num_l; i++){
         var tmp = Math.random() * (Max - Min) + Min;
         var interspace =Math.random() * (max_interspace - 20) + 20;
         r[i] =new Rectangle(start, tmp);
@@ -52,9 +55,15 @@ function windowResized() {
 function draw() {
     background('#fff3f3');
     micLevel = mic.getLevel();
-
-    image(role,windowWidth/4,height-diff,role.width/3,role.height/3)
-    if(micLevel>0.05) {
+    if (role.loaded())
+        image(role,windowWidth/6,height-diff,role.width/3,role.height/3)
+    if((!at_rec(windowWidth/6+role.width/6))&&(diff===0))
+    {
+        height+=10
+        height+=20
+        speed=0
+    }
+    if(speed>0&&micLevel>0.05) {
 
         if(!isLock) {
             isUp = true;
@@ -92,9 +101,25 @@ function draw() {
         for(i = 1; i < num_l; i++){
             r[i - 1] = r[i];
         }
-        r[num_l - 1] = new Rectangle(random(r[num_l - 2].beginX + r[num_l - 2].len, r[num_l - 2].beginX + r[num_l - 2].len + max_interspace), random(Min, Max));
+        r[num_l - 1] = new Rectangle(random(r[num_l - 2].beginX + r[num_l - 2].len+min_interspace, r[num_l - 2].beginX + r[num_l - 2].len + max_interspace), random(Min, Max));
     }
 
+}
+
+function at_rec (x)
+{
+    if(x<r[0].beginX)
+        return false
+    else {
+        var i
+        for(i=0;i<num_l;i++)
+        {
+            if(x>r[i].beginX && x< r[i].beginX+r[i].len)
+            {
+                return true
+            }
+        }
+    }
 }
 
 function Rectangle (beginX,len){
