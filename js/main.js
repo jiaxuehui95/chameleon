@@ -11,7 +11,7 @@ var Max = 600;
 var num_l = 5;
 var wide = 100;
 var speed = 25;
-var min_interspace = 20;
+var min_interspace = 50;
 var max_interspace = 200;
 var frameCount = 0;
 
@@ -25,6 +25,10 @@ var spots = new Array(18);
 
 var r = new Array(num_l);
 
+var colorFlag=0
+var accLevel
+
+
 function setup() {
     createCanvas(windowWidth, windowHeight);
 
@@ -35,18 +39,20 @@ function setup() {
     isUp=false;
     isDown=false;
     isLock=false;
-    role = loadGif("lapin.gif")
-    recHeight=height+wide+30
+    role = loadImage("lapin.gif")
+    recHeight=height+wide+30;
+    accLevel=0
 
     frameRate(20);
     var start = 0;
     var i;
-    r[0] = new Rectangle(start, windowWidth/4);
-    start += windowWidth/4 ;
+    r[0] = new Rectangle(start, windowWidth/2);
+    start += windowWidth/2;
     for( i = 1; i < num_l; i++){
         var tmp = Math.random() * (Max - Min) + Min;
-        var interspace =Math.random() * (max_interspace - 20) + 20;
-        r[i] =new Rectangle(start, tmp);
+        var interspace =Math.random() * (max_interspace - min_interspace) + min_interspace;
+        colorFlag=random(0,10);
+        r[i] =new Rectangle(start+interspace, tmp,colorFlag);
         start += (tmp + interspace);
     }
 
@@ -83,15 +89,16 @@ function draw() {
         spots[i].draw_SpinSpots();
     }
     micLevel = mic.getLevel();
-    if (role.loaded())
+    // if (role.loaded())
         image(role,windowWidth/6,height-diff,role.width/2,role.height/2)
-    if((!at_rec(windowWidth/6+role.width/5))&&(diff===0))
-    {
-        height+=10
-        height+=20
-        speed=0
-    }
-    if(speed>0&&micLevel>0.05) {
+    accLevel = accelerationX;
+    // if((!at_rec(windowWidth/6+role.width/5))&&(diff===0))
+    // {
+    //     height+=10
+    //     height+=20
+    //     speed=0
+    // }
+    if(speed>0&&accLevel>3) {
 
         if(!isLock) {
             isUp = true;
@@ -129,7 +136,8 @@ function draw() {
         for(i = 1; i < num_l; i++){
             r[i - 1] = r[i];
         }
-        r[num_l - 1] = new Rectangle(random(r[num_l - 2].beginX + r[num_l - 2].len+min_interspace, r[num_l - 2].beginX + r[num_l - 2].len + max_interspace), random(Min, Max));
+        colorFlag=random(0,10);
+        r[num_l - 1] = new Rectangle(random(r[num_l - 2].beginX + r[num_l - 2].len+min_interspace, r[num_l - 2].beginX + r[num_l - 2].len + max_interspace), random(Min, Max),colorFlag);
     }
 
 }
@@ -150,15 +158,21 @@ function at_rec (x)
     }
 }
 
-function Rectangle (beginX,len){
+function Rectangle (beginX,len,coloFlag){
     this.beginX=beginX;
     this.len=len
+    this.colorFlag=coloFlag
 
 
     var c =255;
+    //var colorFlag=0
     this.draw_rect =function(){
         noStroke();
-        fill("#eab4d4");
+
+        if(this.colorFlag>5)
+            fill("#eab4d4");
+        else
+            fill("#f7c90fb5")
         push();
         translate(this.beginX, recHeight);
 
@@ -245,8 +259,6 @@ G.prototype = Spin.prototype;
 SpinSpots.prototype = new G();
 
 SpinSpots.prototype.constructor = SpinSpots;
-
-
 
 
 
