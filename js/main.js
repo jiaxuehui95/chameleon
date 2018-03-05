@@ -10,7 +10,7 @@ var Min = 400;
 var Max = 600;
 var num_l = 5;
 var wide = 100;
-var speed = 30;
+var speed = 25;
 var min_interspace = 20;
 var max_interspace = 200;
 var frameCount = 0;
@@ -36,7 +36,7 @@ function setup() {
     var start = 0;
     var i;
     r[0] = new Rectangle(start, windowWidth/4);
-    start += windowWidth/4;
+    start += windowWidth/4 + min_interspace;
     for( i = 1; i < num_l; i++){
         var tmp = Math.random() * (Max - Min) + Min;
         var interspace =Math.random() * (max_interspace - 20) + 20;
@@ -53,7 +53,7 @@ function windowResized() {
 }
 
 function draw() {
-    background('#fff3f3');
+    background(0, 0, 0);
     micLevel = mic.getLevel();
     if (role.loaded())
         image(role,windowWidth/6,height-diff,role.width/3,role.height/3)
@@ -127,10 +127,10 @@ function Rectangle (beginX,len){
     this.len=len
 
 
-    var c=255;
+    var c =255;
     this.draw_rect =function(){
         noStroke();
-        fill("#eab4d4");
+        fill(255, 251, 240);
         push();
         translate(this.beginX, recHeight);
 
