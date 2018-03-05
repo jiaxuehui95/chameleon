@@ -17,6 +17,12 @@ var frameCount = 0;
 
 var recHeight;
 
+var radius = 8.0;
+var snowSpeed = 0.01;
+var a = 50.0;
+var arm = new Array(18);
+var spots = new Array(18);
+
 var r = new Array(num_l);
 
 function setup() {
@@ -30,19 +36,32 @@ function setup() {
     isDown=false;
     isLock=false;
     role = loadGif("lapin.gif")
-    recHeight=height+wide-10
+    recHeight=height+wide+30
 
     frameRate(20);
     var start = 0;
     var i;
     r[0] = new Rectangle(start, windowWidth/4);
-    start += windowWidth/4 + min_interspace;
+    start += windowWidth/4 ;
     for( i = 1; i < num_l; i++){
         var tmp = Math.random() * (Max - Min) + Min;
         var interspace =Math.random() * (max_interspace - 20) + 20;
         r[i] =new Rectangle(start, tmp);
         start += (tmp + interspace);
     }
+
+    smooth();
+    noStroke();
+
+    var i;
+    for(i = 0; i < 10; i++){
+        var y = random(200, 500);
+        arm[i] = new SpinArm(a, y, snowSpeed);
+        console.log(arm[i].y)
+        spots[i] = new SpinSpots(a, y, snowSpeed);
+        a += 150.0;
+    }
+    a = 0.0;
 }
 
 function windowResized() {
@@ -53,11 +72,20 @@ function windowResized() {
 }
 
 function draw() {
-    background(0, 0, 0);
+    background('#fff3f3');
+
+    fill(0, 23);
+    rect(0, 0, windowWidth, windowHeight);
+    stroke(242, 156, 177);
+    var i;
+    for(i = 0; i < 10; i++){
+        arm[i].draw_SpinArm();
+        spots[i].draw_SpinSpots();
+    }
     micLevel = mic.getLevel();
     if (role.loaded())
-        image(role,windowWidth/6,height-diff,role.width/3,role.height/3)
-    if((!at_rec(windowWidth/6+role.width/6))&&(diff===0))
+        image(role,windowWidth/6,height-diff,role.width/2,role.height/2)
+    if((!at_rec(windowWidth/6+role.width/5))&&(diff===0))
     {
         height+=10
         height+=20
@@ -70,16 +98,16 @@ function draw() {
             isLock=true;
         }
     }
-    if(isUp&&diff===80)
+    if(isUp&&diff===120)
     {
         isUp=false;
         isDown=true;
     }
-    if(isUp&&diff<80)
-        diff+=10
+    if(isUp&&diff<120)
+        diff+=20
 
     if(isDown&&diff>=0)
-        diff-=10
+        diff-=20
     if(isDown&&diff===0)
     {
         isDown=false
@@ -87,8 +115,8 @@ function draw() {
     }
 
     frameCount++;
-   
-   var i,e;
+
+    var i,e;
     for(i = 0; i < num_l; i++){
         r[i].draw_rect();
     }
@@ -130,7 +158,7 @@ function Rectangle (beginX,len){
     var c =255;
     this.draw_rect =function(){
         noStroke();
-        fill(255, 251, 240);
+        fill("#eab4d4");
         push();
         translate(this.beginX, recHeight);
 
@@ -140,6 +168,86 @@ function Rectangle (beginX,len){
     }
 
 }
+
+
+function Spin(xpos, ypos, s){
+    this.x = xpos;
+    this.y = ypos;
+    this.speed = s;
+}
+
+
+function SpinArm(x, y, s)
+{
+    Spin.call(this, x, y, s);
+    var angle=0;
+    var i;
+    this.draw_SpinArm= function(){
+        // console.log(y)
+        y+=1;
+        strokeWeight(3);
+        stroke(242, 156, 177);
+        translate(x, y);
+        for(i = 0; i < 8; i++){
+            push();
+            angle += 3.14/4;
+            rotate(angle);
+            line(0, 0, 24, 0);
+            pop();
+        }
+        translate(-x, -y);
+        if(y > height + radius){
+            y = 0;
+        }
+    }
+}
+
+function F() {
+}
+
+F.prototype = Spin.prototype;
+
+SpinArm.prototype = new F();
+
+SpinArm.prototype.constructor = SpinArm;
+
+
+
+function SpinSpots (x,y,s) {
+    Spin.call(this, x,y,s);
+    var angle=0;
+    this.draw_SpinSpots=function() {
+        y+=1;
+        fill(255);
+        noStroke();
+        translate(x, y);
+        push();
+        //translate(x, y);
+        angle += speed;
+        rotate(angle);
+        ellipse(-radius, 0, 2*radius, 2*radius);
+        ellipse(0, -radius, 2*radius, 2*radius);
+        ellipse(radius, 0, 2*radius, 2*radius);
+        ellipse(0, radius, 2*radius, 2*radius);
+        pop();
+        translate(-x, -y);
+        if(y > height + radius){
+            y = 0;
+        }
+    }
+}
+
+function G() {
+}
+
+G.prototype = Spin.prototype;
+
+SpinSpots.prototype = new G();
+
+SpinSpots.prototype.constructor = SpinSpots;
+
+
+
 
 
 
