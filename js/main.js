@@ -5,6 +5,7 @@ var diff=0;
 var isUp=false;
 var isDown=false;
 var isLock=false;
+var isVoiceLock = false;
 
 var Min = 400;
 var Max = 600;
@@ -28,18 +29,25 @@ var r = new Array(num_l);
 var colorFlag=0
 var accLevel
 
+var center = new Array(6);
+var poinStart = 30;
+var p;
+
+var cloudColor = false;
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
 
     mic = new p5.AudioIn()
     mic.start();
-    height =windowHeight/2
+    height = windowHeight/2
+    q = windowHeight/2 + 100
     diff=0
     isUp=false;
     isDown=false;
     isLock=false;
     role = loadImage("lapin.gif")
+    p = windowWidth/4 - 30
     recHeight=height+wide+30;
     accLevel=0
 
@@ -63,7 +71,6 @@ function setup() {
     for(i = 0; i < 10; i++){
         var y = random(200, 500);
         arm[i] = new SpinArm(a, y, snowSpeed);
-        console.log(arm[i].y)
         spots[i] = new SpinSpots(a, y, snowSpeed);
         a += 150.0;
     }
@@ -83,14 +90,25 @@ function draw() {
     fill(0, 23);
     rect(0, 0, windowWidth, windowHeight);
     stroke(242, 156, 177);
+
+    image(role,windowWidth/6,height-diff-42,role.width/2,role.height/2)
+    center[0] = new myPoint(poinStart, 0);
+    center[1] = new myPoint(2.5*poinStart, 0);
+    center[2] = new myPoint(3*poinStart, 0.3*poinStart);
+    center[3] = new myPoint(2.5*poinStart, 0.5*poinStart);
+    center[4] = new myPoint(1.5*poinStart, 0.7*poinStart);
+    center[5] = new myPoint(0, 0.3*poinStart);
+    for(var i = 0; i < 6; i++){
+     center[i].draw_pEllipse();
+    }
+
     var i;
     for(i = 0; i < 10; i++){
         arm[i].draw_SpinArm();
         spots[i].draw_SpinSpots();
     }
     micLevel = mic.getLevel();
-    // if (role.loaded())
-        image(role,windowWidth/6,height-diff,role.width/2,role.height/2)
+
     accLevel = accelerationX;
     // if((!at_rec(windowWidth/6+role.width/5))&&(diff===0))
     // {
@@ -99,12 +117,22 @@ function draw() {
     //     speed=0
     // }
     if(speed>0&&accLevel>3) {
-
-        if(!isLock) {
-            isUp = true;
-            isLock=true;
-        }
+      if(!isLock) {
+        isUp = true;
+        isLock=true;
+      }
     }
+  if(speed>0&&micLevel>0.03) {
+        console.log("voice")
+    if(!isVoiceLock) {
+      isVoiceLock=true;
+      cloudColor = !cloudColor;
+    }
+  }
+  if(speed>0&&micLevel<0.02)
+  {
+      isVoiceLock=false;
+  }
     if(isUp&&diff===120)
     {
         isUp=false;
@@ -141,127 +169,4 @@ function draw() {
     }
 
 }
-
-function at_rec (x)
-{
-    if(x<r[0].beginX)
-        return false
-    else {
-        var i
-        for(i=0;i<num_l;i++)
-        {
-            if(x>r[i].beginX && x< r[i].beginX+r[i].len)
-            {
-                return true
-            }
-        }
-    }
-}
-
-function Rectangle (beginX,len,coloFlag){
-    this.beginX=beginX;
-    this.len=len
-    this.colorFlag=coloFlag
-
-
-    var c =255;
-    //var colorFlag=0
-    this.draw_rect =function(){
-        noStroke();
-
-        if(this.colorFlag>5)
-            fill("#eab4d4");
-        else
-            fill("#f7c90fb5")
-        push();
-        translate(this.beginX, recHeight);
-
-        rect(0, 0, this.len, wide);
-
-        pop();
-    }
-
-}
-
-
-function Spin(xpos, ypos, s){
-    this.x = xpos;
-    this.y = ypos;
-    this.speed = s;
-}
-
-
-function SpinArm(x, y, s)
-{
-    Spin.call(this, x, y, s);
-    var angle=0;
-    var i;
-    this.draw_SpinArm= function(){
-        // console.log(y)
-        y+=1;
-        strokeWeight(3);
-        stroke(242, 156, 177);
-        translate(x, y);
-        for(i = 0; i < 8; i++){
-            push();
-            angle += 3.14/4;
-            rotate(angle);
-            line(0, 0, 24, 0);
-            pop();
-        }
-        translate(-x, -y);
-        if(y > height + radius){
-            y = 0;
-        }
-    }
-}
-
-function F() {
-}
-
-F.prototype = Spin.prototype;
-
-SpinArm.prototype = new F();
-
-SpinArm.prototype.constructor = SpinArm;
-
-
-
-function SpinSpots (x,y,s) {
-    Spin.call(this, x,y,s);
-    var angle=0;
-    this.draw_SpinSpots=function() {
-        y+=1;
-        fill(255);
-        noStroke();
-        translate(x, y);
-        push();
-        //translate(x, y);
-        angle += speed;
-        rotate(angle);
-        ellipse(-radius, 0, 2*radius, 2*radius);
-        ellipse(0, -radius, 2*radius, 2*radius);
-        ellipse(radius, 0, 2*radius, 2*radius);
-        ellipse(0, radius, 2*radius, 2*radius);
-        pop();
-        translate(-x, -y);
-        if(y > height + radius){
-            y = 0;
-        }
-    }
-}
-
-function G() {
-}
-
-G.prototype = Spin.prototype;
-
-SpinSpots.prototype = new G();
-
-SpinSpots.prototype.constructor = SpinSpots;
-
-
-
-
-
 
