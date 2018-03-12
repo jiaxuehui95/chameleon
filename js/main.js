@@ -36,8 +36,8 @@ var p;
 var cloudColor = false;
 
 function setup() {
+    /****************initialisation varibales*****************/
     createCanvas(windowWidth, windowHeight);
-
     mic = new p5.AudioIn()
     mic.start();
     height = windowHeight/2
@@ -47,11 +47,12 @@ function setup() {
     isDown=false;
     isLock=false;
     role = loadImage("lapin.gif")
-    p = windowWidth/4 - 30
+    p = windowWidth/4
     recHeight=height+wide+30;
     accLevel=0
 
     frameRate(20);
+    /****************draw rectangles*****************/
     var start = 0;
     var i;
     r[0] = new Rectangle(start, windowWidth/2);
@@ -63,11 +64,9 @@ function setup() {
         r[i] =new Rectangle(start+interspace, tmp,colorFlag);
         start += (tmp + interspace);
     }
-
+    /****************snow background*****************/
     smooth();
     noStroke();
-
-    var i;
     for(i = 0; i < 10; i++){
         var y = random(200, 500);
         arm[i] = new SpinArm(a, y, snowSpeed);
@@ -85,43 +84,79 @@ function windowResized() {
 }
 
 function draw() {
-    background('#fff3f3');
+  /****************draw of background*****************/
+  background('#fff3f3');
+  fill(0, 23);
+  rect(0, 0, windowWidth, windowHeight);
+  stroke(242, 156, 177);
 
-    fill(0, 23);
-    rect(0, 0, windowWidth, windowHeight);
-    stroke(242, 156, 177);
+  /****************draw game role with cloud*****************/
+  image(role,windowWidth/6,height-diff-42,role.width/2,role.height/2)
 
-    image(role,windowWidth/6,height-diff-42,role.width/2,role.height/2)
-    center[0] = new myPoint(poinStart, 0);
-    center[1] = new myPoint(2.5*poinStart, 0);
-    center[2] = new myPoint(3*poinStart, 0.3*poinStart);
-    center[3] = new myPoint(2.5*poinStart, 0.5*poinStart);
-    center[4] = new myPoint(1.5*poinStart, 0.7*poinStart);
-    center[5] = new myPoint(0, 0.3*poinStart);
-    for(var i = 0; i < 6; i++){
-     center[i].draw_pEllipse();
+  center[0] = new myPoint(poinStart, 0);
+  center[1] = new myPoint(2.5*poinStart, 0);
+  center[2] = new myPoint(3*poinStart, 0.3*poinStart);
+  center[3] = new myPoint(2.5*poinStart, 0.5*poinStart);
+  center[4] = new myPoint(1.5*poinStart, 0.7*poinStart);
+  center[5] = new myPoint(0, 0.3*poinStart);
+  var i
+  for(i = 0; i < 6; i++){
+    center[i].draw_pEllipse();
+  }
+  /****************draw game role with cloud*****************/
+  frameCount++;
+
+  var i,e;
+  for(i = 0; i < num_l; i++){
+    r[i].draw_rect();
+  }
+  for( e in  r){
+
+    r[e].beginX -= speed;
+  }
+  //si le premier rectangle est disparu d'écran, on ajoute un nouveau(il y a toujours num_l rectangles dans r)
+  if(r[0].beginX + r[0].len < 0 ){
+    for(i = 1; i < num_l; i++){
+      r[i - 1] = r[i];
     }
+    colorFlag=random(0,10);
+    r[num_l - 1] = new Rectangle(random(r[num_l - 2].beginX + r[num_l - 2].len+min_interspace, r[num_l - 2].beginX + r[num_l - 2].len + max_interspace), random(Min, Max),colorFlag);
+  }
 
-    var i;
-    for(i = 0; i < 10; i++){
-        arm[i].draw_SpinArm();
-        spots[i].draw_SpinSpots();
-    }
-    micLevel = mic.getLevel();
 
-    accLevel = accelerationX;
-    // if((!at_rec(windowWidth/6+role.width/5))&&(diff===0))
-    // {
-    //     height+=10
-    //     height+=20
-    //     speed=0
-    // }
-    if(speed>0&&accLevel>3) {
-      if(!isLock) {
-        isUp = true;
-        isLock=true;
-      }
+  /****************draw snow background*****************/
+  for(i = 0; i < 10; i++){
+    arm[i].draw_SpinArm();
+    spots[i].draw_SpinSpots();
+  }
+
+  /****************acceletation for jump*****************/
+  accLevel = accelerationX;
+  if(speed>0&&accLevel>3) {
+    if(!isLock) {
+      isUp = true;
+      isLock=true;
     }
+  }
+
+  if(isUp&&diff===120)
+  {
+    isUp=false;
+    isDown=true;
+  }
+  if(isUp&&diff<120)
+    diff+=20
+
+  if(isDown&&diff>=0)
+    diff-=20
+  if(isDown&&diff===0)
+  {
+    isDown=false
+    isLock=false
+  }
+
+  /****************voice for change color*****************/
+  micLevel = mic.getLevel();
   if(speed>0&&micLevel>0.03) {
         console.log("voice")
     if(!isVoiceLock) {
@@ -133,40 +168,16 @@ function draw() {
   {
       isVoiceLock=false;
   }
-    if(isUp&&diff===120)
-    {
-        isUp=false;
-        isDown=true;
-    }
-    if(isUp&&diff<120)
-        diff+=20
 
-    if(isDown&&diff>=0)
-        diff-=20
-    if(isDown&&diff===0)
-    {
-        isDown=false
-        isLock=false
-    }
+  /****************check game over*****************/
 
-    frameCount++;
 
-    var i,e;
-    for(i = 0; i < num_l; i++){
-        r[i].draw_rect();
-    }
-    for( e in  r){
-
-        r[e].beginX -= speed;
-    }
-    //si le premier rectangle est disparu d'écran, on ajoute un nouveau(il y a toujours num_l rectangles dans r)
-    if(r[0].beginX + r[0].len < 0 ){
-        for(i = 1; i < num_l; i++){
-            r[i - 1] = r[i];
-        }
-        colorFlag=random(0,10);
-        r[num_l - 1] = new Rectangle(random(r[num_l - 2].beginX + r[num_l - 2].len+min_interspace, r[num_l - 2].beginX + r[num_l - 2].len + max_interspace), random(Min, Max),colorFlag);
-    }
+  // if((!at_rec(windowWidth/6+role.width/5))&&(diff===0))
+  // {
+  //     height+=10
+  //     height+=20
+  //     speed=0
+  // }
 
 }
 
