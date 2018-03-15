@@ -10,4 +10,4 @@ ngrok：[https://ngrok.com/](https://ngrok.com/)
 
 `$ ./ngrok http 80`
 
-![chameleon2](/img/chameleon2.png)
+![chameleon2](/img/chameleon2.jpeg)
