@@ -50,6 +50,7 @@ function setup() {
   isDown=false;
   isLock=false;
   role = loadImage("lapin.gif")
+  role2 = loadImage("gameover.jpg")
   recHeight=height+wide+30;
   accLevel=0
 
@@ -179,15 +180,16 @@ function draw() {
   /****************check game over*****************/
 
 
-  // if((!at_rec(windowWidth/6+role.width/5))&&(diff===0))
-  // {
-  //     height+=10
-  //     height+=20
-  //     cloudY+10
-  //     cloudY+=20
-  //     speed=0
-  // }
-
+   if((!at_rec(windowWidth/6+role.width/5))&&(diff===0))
+   {
+       //height+=10
+       //height+=20
+       //cloudY+10
+       //cloudY+=20
+       speed=0
+       image(role2,windowWidth/4,0,role2.width,role2.height)
+       document.getElementById('button').setAttribute("style", "display: block")
+   }
   if(cloudColor !== rec_color(windowWidth/6+role.width/5) && at_rec(windowWidth/6+role.width/5))
   {
       speed = 0;

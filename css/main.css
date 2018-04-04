@@ -36,6 +36,18 @@ html {
     text-shadow: none;
 }
 
+
+.myButton {
+    width: 80px;
+    position: absolute;
+    width: 80px;
+    top: 70%;
+    left: 50%;
+    margin-left: -40px;
+}
+
+
+
 /*
  * A better looking default horizontal rule
  */
