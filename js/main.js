@@ -58,8 +58,8 @@ function setup() {
   /****************draw rectangles*****************/
   var start = 0;
   var i;
-  r[0] = new Rectangle(start, windowWidth/2);
-  start += windowWidth/2;
+  r[0] = new Rectangle(start, 1.5*windowWidth);
+  start += 1.5*windowWidth;
   for( i = 1; i < num_l; i++){
     var tmp = Math.random() * (Max - Min) + Min;
     var interspace =Math.random() * (max_interspace - min_interspace) + min_interspace;
@@ -160,7 +160,7 @@ function draw() {
 
   /****************voice for change color*****************/
   micLevel = mic.getLevel();
-  if(speed>0&&micLevel>0.03) {
+  if(speed>0&&micLevel>0.04) {
         console.log("voice")
     if(!isVoiceLock) {
       isVoiceLock=true;
@@ -193,6 +193,7 @@ function draw() {
   if(cloudColor !== rec_color(windowWidth/6+role.width/5) && at_rec(windowWidth/6+role.width/5))
   {
       speed = 0;
+      console.log("deadColor")
   }
 
 }
