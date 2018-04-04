@@ -13,7 +13,7 @@ var num_l = 5;
 var wide = 100;
 var speed = 25;
 var min_interspace = 50;
-var max_interspace = 300;
+var max_interspace = 200;
 var frameCount = 0;
 
 var recHeight;
@@ -32,6 +32,7 @@ var center = new Array(6);
 var poinStart = 20;
 var cloudY;
 var cloudX;
+var onTop = false;
 
 var cloudColor = "#f7c90fb5"; //yellow
 var colorFlag=0;      //yellow
@@ -50,7 +51,7 @@ function setup() {
   isDown=false;
   isLock=false;
   role = loadImage("lapin.gif")
-  role2 = loadImage("gameover.jpg")
+  role2 = loadImage("gameover.png")
   recHeight=height+wide+30;
   accLevel=0
 
@@ -87,13 +88,27 @@ function windowResized() {
   cloudY = height+wide+7;
 }
 
+
 function draw() {
   /****************draw of background*****************/
   background('#fff3f3');
   fill(0, 23);
   rect(0, 0, windowWidth, windowHeight);
   stroke(242, 156, 177);
+  document.onkeydown=function(e){
+    var isie = (document.all) ? true:false;
+    var key;
+    if(isie){
+        key = window.event.keyCode;
+    }else{
+        key = e.which;
+    }
+    if(key==38){
+        onTop = true;
+    }
 
+};
+  
   /****************draw game role with cloud*****************/
   image(role,windowWidth/6,height-diff-30,role.width/2,role.height/2)
   center[0] = new myPoint(poinStart, 0 , cloudX, cloudY-diff);
@@ -135,7 +150,7 @@ function draw() {
 
   /****************acceletation for jump*****************/
   accLevel = accelerationX;
-  if(speed>0&&accLevel>3) {
+  if(speed>0&&(accLevel>3||onTop)) {
     if(!isLock) {
       isUp = true;
       isLock=true;
@@ -156,11 +171,12 @@ function draw() {
   {
     isDown=false
     isLock=false
+    onTop = false
   }
 
   /****************voice for change color*****************/
   micLevel = mic.getLevel();
-  if(speed>0&&micLevel>0.04) {
+  if(speed>0&&(micLevel>0.04)) {
         console.log("voice")
     if(!isVoiceLock) {
       isVoiceLock=true;
@@ -175,6 +191,7 @@ function draw() {
   if(speed>0&&micLevel<0.02)
   {
       isVoiceLock=false;
+
   }
 
   /****************check game over*****************/
@@ -182,18 +199,19 @@ function draw() {
 
    if((!at_rec(windowWidth/6+role.width/5))&&(diff===0))
    {
-       //height+=10
-       //height+=20
-       //cloudY+10
-       //cloudY+=20
+       height+=10
+       height+=20
+       cloudY+10
+       cloudY+=20
        speed=0
-       image(role2,windowWidth/4,0,role2.width,role2.height)
+       image(role2,windowWidth/2-role2.width/6,windowHeight/2-role2.height/6,role2.width/3 ,role2.height/3)
        document.getElementById('button').setAttribute("style", "display: block")
    }
   if(cloudColor !== rec_color(windowWidth/6+role.width/5) && at_rec(windowWidth/6+role.width/5))
   {
       speed = 0;
-      console.log("deadColor")
+        image(role2,windowWidth/2-role2.width/6,windowHeight/2-role2.height/6,role2.width/3 ,role2.height/3)
+       document.getElementById('button').setAttribute("style", "display: block")
   }
 
 }
