@@ -176,7 +176,7 @@ function draw() {
 
   /****************voice for change color*****************/
   micLevel = mic.getLevel();
-  if(speed>0&&(micLevel>0.04)) {
+  if(speed>0&&(micLevel>0.06)) {
         console.log("voice")
     if(!isVoiceLock) {
       isVoiceLock=true;
@@ -188,7 +188,7 @@ function draw() {
       }
     }
   }
-  if(speed>0&&micLevel<0.02)
+  if(speed>0&&micLevel<0.05)
   {
       isVoiceLock=false;
 
